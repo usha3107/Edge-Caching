@@ -1,0 +1,7 @@
+setup:
+  - command: "npm install"
+  - command: "npx prisma migrate deploy"
+test:
+  - command: "npm test"
+benchmark:
+  - command: "python scripts/run_benchmark.py"
