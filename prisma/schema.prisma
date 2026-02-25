@@ -1,0 +1,49 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Asset {
+  id                 String         @id @default(uuid())
+  objectStorageKey   String         @unique
+  filename           String
+  mimeType           String
+  sizeBytes          BigInt
+  etag               String
+  currentVersionId   String?
+  isPrivate          Boolean        @default(false)
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  versions           AssetVersion[]
+  accessTokens       AccessToken[]
+
+  @@map("assets")
+}
+
+model AssetVersion {
+  id                 String   @id @default(uuid())
+  assetId            String
+  asset              Asset    @relation(fields: [assetId], references: [id])
+  objectStorageKey   String   @unique
+  etag               String
+  createdAt          DateTime @default(now())
+
+  @@map("asset_versions")
+}
+
+model AccessToken {
+  token     String   @id
+  assetId   String
+  asset     Asset    @relation(fields: [assetId], references: [id])
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@map("access_tokens")
+}
